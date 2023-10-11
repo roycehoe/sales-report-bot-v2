@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "sales-report-bot-v2"
+version = "0.1.0"
+description = ""
+authors = ["royce <royceinbox@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+pre-commit = "^3.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
