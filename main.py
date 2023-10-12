@@ -70,7 +70,9 @@ def get_ledger_summary(messages: list[Message]) -> list[LedgerSummary]:
     usernames = list({message.from_user.username for message in messages})
     for username in usernames:
         payment = [
-            message.text for message in messages if message.from_user == username
+            message.text
+            for message in messages
+            if message.from_user.username == username
         ]
         ledger_summary.append(LedgerSummary(username=username, payment=payment))
     return ledger_summary
