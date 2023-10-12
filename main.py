@@ -3,7 +3,6 @@ from datetime import datetime
 from dotenv import dotenv_values
 from telegram import Message, Update
 from telegram.ext import (
-    ApplicationBuilder,
     CommandHandler,
     ContextTypes,
     Application,
@@ -23,14 +22,6 @@ class MessageStore:
     def store(self, update: Update, context: Application) -> None:
         if message := update.message:
             self.messages.append(message)
-
-    def filter_by_date(
-        self,
-        date: datetime = datetime.today(),
-    ):
-        return [
-            message for message in self.messages if message.date.date() == date.date()
-        ]
 
 
 def get_date_display(date: datetime) -> str:
@@ -86,10 +77,11 @@ def get_ledger_summary_display(messages: list[Message]) -> str:
 
 
 def get_display(messages: list[Message], date: datetime = datetime.today()) -> str:
+    messages_by_date = [i for i in messages if i.date.date() == date.date()]
     banner_display = get_banner_display()
     date_display = get_date_display(date)
-    ledger_display = get_ledger_display(messages)
-    ledger_summary_display = get_ledger_summary_display(messages)
+    ledger_display = get_ledger_display(messages_by_date)
+    ledger_summary_display = get_ledger_summary_display(messages_by_date)
 
     return f"{banner_display}\n{date_display}\n{banner_display}\n\n{ledger_display}\n\n{ledger_summary_display}"
 
@@ -102,7 +94,23 @@ class MessageFormatter:
         if message := update.message:
             display = get_display(message_store.messages)
             await message.reply_text(f"{display}")
-            # await message.reply_text(f"{message_store.messages}")
+
+    async def show_with_date_input(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        try:
+            date = datetime.strptime(update.message.text, "%d-%m-%Y")
+        except Exception:
+            await update.message.reply_text("Invalid date. Please try again")
+            return
+
+        if message := update.message:
+            display = get_display(message_store.messages, date)
+            await message.reply_text(f"{display}")
+
+
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(update.message.text)
 
 
 application = Application.builder().token(TOKEN).build()
@@ -112,5 +120,9 @@ message_formatter = MessageFormatter(message_store)
 message_handler = MessageHandler(filters.Chat(chat_id=CHAT_ID), message_store.store)
 application.add_handler(message_handler)
 application.add_handler(CommandHandler("show", message_formatter.show))
-
+application.add_handler(
+    MessageHandler(
+        filters.TEXT & ~filters.COMMAND, message_formatter.show_with_date_input
+    )
+)
 application.run_polling(allowed_updates=Update.ALL_TYPES)
