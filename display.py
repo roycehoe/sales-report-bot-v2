@@ -57,7 +57,9 @@ def get_ledger_summary_display(messages: list[Message]) -> str:
     return "\n".join(ledger)
 
 
-def get_display(messages: list[Message], date: datetime = datetime.today()) -> str:
+def get_display(
+    messages: list[Message], date: datetime = get_local_time(datetime.today())
+) -> str:
     messages_by_date = [
         i for i in messages if get_local_time(i.date).date() == date.date()
     ]
