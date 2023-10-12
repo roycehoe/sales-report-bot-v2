@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from dotenv import dotenv_values
+import pytz
 from telegram import Message, Update
 from telegram.ext import (
     CommandHandler,
@@ -14,6 +15,13 @@ CONFIG = dotenv_values()
 
 TOKEN = CONFIG.get("TOKEN", "") or ""
 CHAT_ID = -4000147220
+CURRENT_TIMEZONE = "Asia/Singapore"
+
+
+def get_local_time(date: datetime) -> datetime:
+    target_timezone = pytz.timezone(CURRENT_TIMEZONE)
+    timestamp_utc8 = date.astimezone(target_timezone)
+    return timestamp_utc8
 
 
 class MessageStore:
@@ -33,7 +41,7 @@ def get_banner_display() -> str:
 
 
 def get_ledger_entry_display(message: Message) -> str:
-    return f"{message.date.strftime('%H:%M:%S')} | {message.from_user.username} | {message.text}"
+    return f"{get_local_time(message.date).strftime('%H:%M:%S')} | {message.from_user.username} | {message.text}"
 
 
 def get_ledger_display(messages: list[Message]) -> str:
@@ -77,7 +85,9 @@ def get_ledger_summary_display(messages: list[Message]) -> str:
 
 
 def get_display(messages: list[Message], date: datetime = datetime.today()) -> str:
-    messages_by_date = [i for i in messages if i.date.date() == date.date()]
+    messages_by_date = [
+        i for i in messages if get_local_time(i.date).date() == date.date()
+    ]
     banner_display = get_banner_display()
     date_display = get_date_display(date)
     ledger_display = get_ledger_display(messages_by_date)
@@ -92,7 +102,7 @@ class MessageFormatter:
 
     async def show(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if message := update.message:
-            display = get_display(message_store.messages)
+            display = get_display(self.message_store.messages)
             await message.reply_text(f"{display}")
 
     async def show_with_date_input(

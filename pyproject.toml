@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 python-telegram-bot = "^20.6"
+pytz = "^2023.3.post1"
 
 
 [tool.poetry.group.dev.dependencies]
