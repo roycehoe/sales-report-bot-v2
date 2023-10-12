@@ -15,7 +15,7 @@ from display import get_display
 
 CONFIG = dotenv_values()
 TOKEN = CONFIG.get("TOKEN", "") or ""
-CHAT_ID = CONFIG.get("CHAT_ID", "") or ""
+CHAT_ID = int(CONFIG.get("CHAT_ID") or 0)
 
 
 class MessageStore:
