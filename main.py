@@ -1,5 +1,6 @@
+import datetime
 from dotenv import dotenv_values
-from telegram import Update
+from telegram import Message, Update
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -14,7 +15,7 @@ CONFIG = dotenv_values()
 TOKEN = CONFIG.get("TOKEN", "") or ""
 CHAT_ID = -4000147220
 
-message_history = []
+message_history: list[Message] = []
 
 
 def store_message(update: Update, context: Application) -> None:
@@ -25,6 +26,15 @@ def store_message(update: Update, context: Application) -> None:
 async def show_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if message := update.message:
         await message.reply_text(f"{message_history}")
+
+
+def filter_messages_by_date(
+    date: datetime.datetime = datetime.datetime.today(),
+    message_history: list[Message] = message_history,
+):
+    return [
+        message for message in message_history if message.date.date() == date.date()
+    ]
 
 
 application = Application.builder().token(TOKEN).build()
