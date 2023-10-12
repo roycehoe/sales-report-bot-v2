@@ -91,7 +91,7 @@ def get_display(messages: list[Message], date: datetime = datetime.today()) -> s
     ledger_display = get_ledger_display(messages)
     ledger_summary_display = get_ledger_summary_display(messages)
 
-    return f"{date_display} \n {banner_display} \n {ledger_display} \n {ledger_summary_display}"
+    return f"{banner_display}\n{date_display}\n{banner_display}\n\n{ledger_display}\n\n{ledger_summary_display}"
 
 
 class MessageFormatter:
