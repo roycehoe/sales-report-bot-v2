@@ -32,20 +32,21 @@ class MessageStore:
         ]
 
 
-async def show_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if message := update.message:
-        await message.reply_text(f"{message_history}")
+class MessageFormatter:
+    def __init__(self, message_store: MessageStore):
+        self.message_store = message_store
+
+    async def show(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        if message := update.message:
+            await message.reply_text(f"{message_store.messages}")
 
 
 application = Application.builder().token(TOKEN).build()
 message_store = MessageStore()
+message_formatter = MessageFormatter(message_store)
 
-# message_handler = MessageHandler(filters.Chat(chat_id=CHAT_ID), store_message)
 message_handler = MessageHandler(filters.Chat(chat_id=CHAT_ID), message_store.store)
 application.add_handler(message_handler)
-
-# application.add_handler(CommandHandler("show", show_messages))
-message_history = message_store.messages
-application.add_handler(CommandHandler("show", show_messages))
+application.add_handler(CommandHandler("show", message_formatter.show))
 
 application.run_polling(allowed_updates=Update.ALL_TYPES)
