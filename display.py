@@ -14,7 +14,7 @@ def get_banner_display() -> str:
 
 
 def get_ledger_entry_display(message: Message) -> str:
-    return f"{get_local_time(message.date).strftime('%H:%M:%S')} | {message.from_user.username} | {message.text}"
+    return f"{get_local_time(message.date).strftime('%H:%M:%S')} | {message.from_user.username} | {message.caption}"
 
 
 def get_ledger_display(messages: list[Message]) -> str:
@@ -42,7 +42,7 @@ def get_ledger_summary(messages: list[Message]) -> list[LedgerSummary]:
     usernames = list({message.from_user.username for message in messages})
     for username in usernames:
         payment = [
-            message.text
+            message.caption
             for message in messages
             if message.from_user.username == username
         ]
