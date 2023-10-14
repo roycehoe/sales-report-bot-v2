@@ -74,6 +74,6 @@ def get_display(
     date_display = get_date_display(date)
     ledger_display = get_ledger_display(messages_by_date)
     ledger_summary_display = get_ledger_summary_display(messages_by_date)
-    daily_total = get_ledger_summary_display(messages_by_date)
+    daily_total = get_daily_total(messages_by_date)
 
     return f"{banner_display}\n{date_display}\n{banner_display}\n\n{ledger_display}\n\n{ledger_summary_display}\n\nTotal: {daily_total}"
