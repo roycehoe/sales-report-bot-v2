@@ -57,6 +57,13 @@ def get_ledger_summary_display(messages: list[Message]) -> str:
     return "\n".join(ledger)
 
 
+def get_daily_total(messages: list[Message]) -> str:
+    try:
+        return [int(message.caption) for message in messages]
+    except Exception:
+        return "Unable to parse payments"
+
+
 def get_display(
     messages: list[Message], date: datetime = get_local_time(datetime.today())
 ) -> str:
@@ -67,5 +74,6 @@ def get_display(
     date_display = get_date_display(date)
     ledger_display = get_ledger_display(messages_by_date)
     ledger_summary_display = get_ledger_summary_display(messages_by_date)
+    daily_total = get_ledger_summary_display(messages_by_date)
 
-    return f"{banner_display}\n{date_display}\n{banner_display}\n\n{ledger_display}\n\n{ledger_summary_display}"
+    return f"{banner_display}\n{date_display}\n{banner_display}\n\n{ledger_display}\n\n{ledger_summary_display}\n\nTotal: {daily_total}"
