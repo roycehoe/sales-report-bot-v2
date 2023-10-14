@@ -59,7 +59,8 @@ def get_ledger_summary_display(messages: list[Message]) -> str:
 
 def get_daily_total(messages: list[Message]) -> str:
     try:
-        return [int(message.caption) for message in messages]
+        total = [int(message.caption) for message in messages]
+        return str(sum(total))
     except Exception:
         return "Unable to parse payments"
 
