@@ -69,9 +69,7 @@ def get_daily_total(messages: list[Message]) -> str:
         return "Unable to parse payments"
 
 
-def get_display(
-    messages: list[Message], date: datetime = get_local_time(datetime.today())
-) -> str:
+def get_display(messages: list[Message], date: datetime) -> str:
     messages_by_date = [
         i for i in messages if get_local_time(i.date).date() == date.date()
     ]

@@ -13,6 +13,7 @@ from telegram.ext import (
 )
 
 from display import get_display
+from utils import get_local_time
 
 CONFIG = dotenv_values()
 TOKEN = CONFIG.get("TOKEN", "") or ""
@@ -44,8 +45,9 @@ class MessageFormatter:
         self.message_store = message_store
 
     async def show(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        current_time = get_local_time(datetime.today())
         if message := update.message:
-            display = get_display(self.message_store.messages)
+            display = get_display(self.message_store.messages, current_time)
             await message.reply_text(f"{display}")
 
     async def show_with_date_input(
