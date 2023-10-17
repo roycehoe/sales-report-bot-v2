@@ -1,3 +1,4 @@
+from curses.ascii import isdigit
 from dataclasses import dataclass
 from datetime import datetime
 from dotenv import dotenv_values
@@ -18,11 +19,23 @@ TOKEN = CONFIG.get("TOKEN", "") or ""
 CHAT_ID = int(CONFIG.get("CHAT_ID") or 0)
 
 
+def is_sales_data(message: Message) -> bool:
+    if message.caption is None:
+        return False
+    if message.effective_attachment is None:
+        return False
+    if not message.caption.isdigit():
+        return False
+    return True
+
+
 class MessageStore:
     messages: list[Message] = []
 
     def store(self, update: Update, context: Application) -> None:
         if message := update.message:
+            if not is_sales_data(message):
+                return
             self.messages.append(message)
 
 
