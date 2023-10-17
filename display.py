@@ -31,7 +31,7 @@ class LedgerSummary:
 
     def __str__(self):
         try:
-            total_payment = sum(int(i) for i in self.payment)
+            total_payment = sum(int(i) for i in self.payment if i.isdigit())
             return f"{self.username} | {total_payment}"
         except Exception:
             return f"{self.username} | Unable to parse payments"
@@ -59,7 +59,11 @@ def get_ledger_summary_display(messages: list[Message]) -> str:
 
 def get_daily_total(messages: list[Message]) -> str:
     try:
-        total = [int(message.caption) for message in messages]
+        total = [
+            int(message.caption)
+            for message in messages
+            if message.caption is not None and message.caption.isdigit()
+        ]
         return str(sum(total))
     except Exception:
         return "Unable to parse payments"
